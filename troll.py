@@ -5,8 +5,8 @@ import datetime
 import random
 
 # ================= AYARLAR =================
-TOKEN = "MTQ2MTQ1MjIyMTc4MTc3MDQ2OQ.G_ftKg.cvQsImxSdg01yLZKPodI7MRiQGPEqLaqVqFsOU"
-GUILD_ID = 1259126653838299209  # SUNUCU ID
+TOKEN = "BOT_TOKENINI_BURAYA_YAZ"
+GUILD_ID = 1259126653838299209  # Sunucu ID
 YETKILI_ROL = "Channel Manager"
 LOG_KANAL = "mod-log"
 
@@ -24,9 +24,14 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ================= READY =================
 @bot.event
 async def on_ready():
-    await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
+    guild = discord.Object(id=GUILD_ID)
+
+    # 🔥 ESKİ SLASH KOMUTLARINI TEMİZLER
+    bot.tree.clear_commands(guild=guild)
+    await bot.tree.sync(guild=guild)
+
     print(f"Aktif: {bot.user}")
-    print("Slash komutlar senkronlandı")
+    print("Slash komutlar temizlendi ve senkronlandı")
 
 # ================= LOG =================
 async def log_gonder(guild, embed):
@@ -94,24 +99,31 @@ class KanalPanel(discord.ui.View):
         return interaction.user == self.yetkili
 
     @discord.ui.button(label="➕ Metin Kanal", style=discord.ButtonStyle.success)
-    async def metin(self, interaction, button):
+    async def metin(self, interaction: discord.Interaction, button: discord.ui.Button):
         ch = await interaction.guild.create_text_channel("yeni-metin")
-        await interaction.response.send_message(f"{ch.mention} oluşturuldu", ephemeral=True)
+        await interaction.response.send_message(
+            f"{ch.mention} oluşturuldu", ephemeral=True
+        )
 
     @discord.ui.button(label="🔊 Ses Kanal", style=discord.ButtonStyle.primary)
-    async def ses(self, interaction, button):
+    async def ses(self, interaction: discord.Interaction, button: discord.ui.Button):
         ch = await interaction.guild.create_voice_channel("Yeni Ses")
-        await interaction.response.send_message(f"{ch.name} oluşturuldu", ephemeral=True)
+        await interaction.response.send_message(
+            f"{ch.name} oluşturuldu", ephemeral=True
+        )
 
     @discord.ui.button(label="📂 Kategori", style=discord.ButtonStyle.secondary)
-    async def kategori(self, interaction, button):
+    async def kategori(self, interaction: discord.Interaction, button: discord.ui.Button):
         k = await interaction.guild.create_category("Yeni Kategori")
-        await interaction.response.send_message(f"{k.name} oluşturuldu", ephemeral=True)
+        await interaction.response.send_message(
+            f"{k.name} oluşturuldu", ephemeral=True
+        )
 
     @discord.ui.button(label="🗑️ Kanal Sil", style=discord.ButtonStyle.danger)
-    async def sil(self, interaction, button):
+    async def sil(self, interaction: discord.Interaction, button: discord.ui.Button):
         ad = interaction.channel.name
         await interaction.channel.delete()
+
         embed = discord.Embed(
             title="🗑️ Kanal Silindi",
             description=ad,
@@ -120,11 +132,13 @@ class KanalPanel(discord.ui.View):
         )
         await log_gonder(interaction.guild, embed)
 
-# ================= SLASH KOMUT =================
+# ================= SLASH KOMUTLAR =================
 @bot.tree.command(name="yonetim", description="Butonlu kanal yönetimi")
-async def yonetim(interaction):
+async def yonetim(interaction: discord.Interaction):
     if not yetkili_mi(interaction.user):
-        return await interaction.response.send_message("Yetkin yok", ephemeral=True)
+        return await interaction.response.send_message(
+            "❌ Yetkin yok", ephemeral=True
+        )
 
     await interaction.response.send_message(
         "🎛️ Kanal Yönetim Paneli",
@@ -132,20 +146,23 @@ async def yonetim(interaction):
         ephemeral=True
     )
 
-# ================= DİĞER SLASH KOMUTLAR =================
-@bot.tree.command(name="ping")
-async def ping(interaction):
-    await interaction.response.send_message(f"Pong {round(bot.latency*1000)}ms")
+@bot.tree.command(name="ping", description="Bot gecikmesi")
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        f"Pong 🏓 {round(bot.latency * 1000)}ms"
+    )
 
-@bot.tree.command(name="yazi-tura")
-async def yazitura(interaction):
-    await interaction.response.send_message(random.choice(["Yazı", "Tura"]))
+@bot.tree.command(name="yazi-tura", description="Yazı tura atar")
+async def yazi_tura(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        random.choice(["🪙 Yazı", "🪙 Tura"])
+    )
 
-@bot.tree.command(name="zar")
-async def zar(interaction):
-    await interaction.response.send_message(str(random.randint(1,6)))
-
-# (İstersen buraya ek komutlar aynen eklenebilir)
+@bot.tree.command(name="zar", description="Zar atar")
+async def zar(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        f"🎲 {random.randint(1, 6)}"
+    )
 
 # ================= RUN =================
 bot.run(TOKEN)
