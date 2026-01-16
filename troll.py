@@ -5,7 +5,7 @@ import datetime
 import random
 
 # ================= AYARLAR =================
-TOKEN = "BOT_TOKENINI_BURAYA_YAZ"
+TOKEN = "MTQ2MTQzNzc0MDkxNzcyMzM2Nw.GSH1-C.FAB33kiLnCyUW0ps8DlZRZNepBdqzqeD1IKgkQ"
 GUILD_ID = 1259126653838299209  # Sunucu ID
 YETKILI_ROL = "Channel Manager"
 LOG_KANAL = "mod-log"
